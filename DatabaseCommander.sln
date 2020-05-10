@@ -1,0 +1,52 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.2036
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "DatabaseCommander", "DatabaseCommander\", "{DE3B92E2-D3F2-46D1-BA69-F34169221042}"
+	ProjectSection(WebsiteProperties) = preProject
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.6.1"
+		ProjectReferences = "{e25d0aef-8dfe-4486-a76f-de61b6de4892}|DBCLib.dll;"
+		Debug.AspNetCompiler.VirtualPath = "/localhost_3060"
+		Debug.AspNetCompiler.PhysicalPath = "DatabaseCommander\"
+		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_3060\"
+		Debug.AspNetCompiler.Updateable = "true"
+		Debug.AspNetCompiler.ForceOverwrite = "true"
+		Debug.AspNetCompiler.FixedNames = "false"
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.VirtualPath = "/localhost_3060"
+		Release.AspNetCompiler.PhysicalPath = "DatabaseCommander\"
+		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_3060\"
+		Release.AspNetCompiler.Updateable = "true"
+		Release.AspNetCompiler.ForceOverwrite = "true"
+		Release.AspNetCompiler.FixedNames = "false"
+		Release.AspNetCompiler.Debug = "False"
+		VWDPort = "3060"
+		SlnRelativePath = "DatabaseCommander\"
+		DefaultWebSiteLanguage = "Visual C#"
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DBCLib", "DBCLib\DBCLib.csproj", "{E25D0AEF-8DFE-4486-A76F-DE61B6DE4892}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DE3B92E2-D3F2-46D1-BA69-F34169221042}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DE3B92E2-D3F2-46D1-BA69-F34169221042}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DE3B92E2-D3F2-46D1-BA69-F34169221042}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{DE3B92E2-D3F2-46D1-BA69-F34169221042}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{E25D0AEF-8DFE-4486-A76F-DE61B6DE4892}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E25D0AEF-8DFE-4486-A76F-DE61B6DE4892}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E25D0AEF-8DFE-4486-A76F-DE61B6DE4892}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E25D0AEF-8DFE-4486-A76F-DE61B6DE4892}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {1E04D6F0-68C7-41C4-8B2A-79BACEB5A214}
+	EndGlobalSection
+EndGlobal

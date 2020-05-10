@@ -1,0 +1,903 @@
+﻿<!--
+    Created by Akshay Srinivasan [akshays2112@gmail.com]
+    This javascript code is provided as is with no warranty implied.
+    Akshay Srinivasan is not liable or responsible for any consequence of
+    using this code in your applications.
+    You are free to use it and/or change it for both commercial and non-commercial
+    applications as long as you give credit to Akshay Srinivasan the creator
+    of this code.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <title>Database Commander</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,
+          minimum-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1,IE=EmulateIE9" />
+    <script src="WindowManager.js" type="text/javascript"></script>
+    <script src="Scrollbar.js" type="text/javascript"></script>
+    <script src="Treeview.js" type="text/javascript"></script>
+    <script src="Grid.js" type="text/javascript"></script>
+    <script src="IconImages.js" type="text/javascript"></script>
+</head>
+<body>
+        <div>
+            <canvas id="canvas" width="1880" height="900" tabindex="0"></canvas>
+            <script type="text/javascript">
+                function fillServer(data) {
+                    var node0 = new TreeviewNode();
+                    node0.Text = data.Name + ' (Microsoft SQL Server)';
+                    node0.ChildNodes = new Array();
+                    node0.IconImgURL = './Images/server.png';
+                    node0.IconImgWidth = 18;
+                    node0.IconImgHeight = 18;
+                    node0.Tag = 'Server';
+                    tv1.Nodes.push(node0);
+                    var node1 = new TreeviewNode();
+                    node1.ParentNode = node0;
+                    node1.Text = 'Databases';
+                    node1.ChildNodes = new Array();
+                    node1.IconImgURL = './Images/databases.png';
+                    node1.IconImgWidth = 18;
+                    node1.IconImgHeight = 18;
+                    node1.Tag = 'Databases';
+                    node0.ChildNodes.push(node1);
+                    getImgURLFromNodes(tv1.CanvasID, tv1WindowID, tv1.Nodes);
+                    xCanvas.InvalidateRect(elemId, 0, 0, 1880, 900);
+                }
+
+                function fillDatabases(data, node2) {
+                    node2.ChildNodes = new Array();
+                    for (var i = 0; i < data.length; i++) {
+                        var node3 = new TreeviewNode();
+                        node3.ParentNode = node2;
+                        node3.Text = data[i].Name;
+                        node3.ChildNodes = new Array();
+                        node3.IconImgURL = './Images/database.png';
+                        node3.IconImgWidth = 18;
+                        node3.IconImgHeight = 18;
+                        node3.Tag = 'Database';
+                        node2.ChildNodes.push(node3);
+                        var node4 = new TreeviewNode();
+                        node4.ParentNode = node3;
+                        node4.Text = 'Tables (Count: ' + data[i].TableCount + ')';
+                        node4.ChildNodes = new Array();
+                        node4.IconImgURL = './Images/tables.png';
+                        node4.IconImgWidth = 18;
+                        node4.IconImgHeight = 18;
+                        node4.Tag = 'Tables';
+                        node3.ChildNodes.push(node4);
+                        var node5 = new TreeviewNode();
+                        node5.ParentNode = node3;
+                        node5.Text = 'Stored Procedures (Count: ' +
+                            data[i].ProcedureCount + ')';
+                        node5.ChildNodes = new Array();
+                        node5.IconImgURL = './Images/storedprocedures.png';
+                        node5.IconImgWidth = 18;
+                        node5.IconImgHeight = 18;
+                        node5.Tag = 'Procedures';
+                        node3.ChildNodes.push(node5);
+                        var node6 = new TreeviewNode();
+                        node6.ParentNode = node3;
+                        node6.Text = 'Views (Count: ' + data[i].ViewCount + ')';
+                        node6.ChildNodes = new Array();
+                        node6.IconImgURL = './Images/views.png';
+                        node6.IconImgWidth = 18;
+                        node6.IconImgHeight = 18;
+                        node6.Tag = 'Views';
+                        node3.ChildNodes.push(node6);
+                        var node7 = new TreeviewNode();
+                        node7.ParentNode = node3;
+                        node7.Text = 'Functions (Count: ' + data[i].FunctionCount + ')';
+                        node7.ChildNodes = new Array();
+                        node7.IconImgURL = './Images/functions.png';
+                        node7.IconImgWidth = 18;
+                        node7.IconImgHeight = 18;
+                        node7.Tag = 'Functions';
+                        node3.ChildNodes.push(node7);
+                    }
+                    getImgURLFromNodes(tv1.CanvasID, tv1WindowID, tv1.Nodes);
+                    xCanvas.InvalidateRect(elemId, 0, 0, 1880, 900);
+                }
+
+                function fillTableOwners(data, node5) {
+                    node5.ChildNodes = new Array();
+                    for (var j = 0; j < data.length; j++) {
+                        var node6 = new TreeviewNode();
+                        node6.ParentNode = node5;
+                        node6.ChildNodes = new Array();
+                        node6.Text = data[j].Name + ' (Count: ' + data[j].Count + ')';
+                        node6.IconImgURL = './Images/user.png';
+                        node6.IconImgWidth = 18;
+                        node6.IconImgHeight = 18;
+                        node6.Tag = 'TableOwner';
+                        node5.ChildNodes.push(node6);
+                    }
+                    getImgURLFromNodes(tv1.CanvasID, tv1WindowID, tv1.Nodes);
+                    xCanvas.InvalidateRect(elemId, 0, 0, 1880, 900);
+                }
+
+                function fillTablesForOwner(data, node5) {
+                    node5.ChildNodes = new Array();
+                    for (var j = 0; j < data.length; j++) {
+                        var node6 = new TreeviewNode();
+                        node6.ParentNode = node5;
+                        node6.ChildNodes = new Array();
+                        node6.Text = data[j].Name + ' (Row Count: ' + data[j].RowCount + ')';
+                        node6.IconImgURL = './Images/table.png';
+                        node6.IconImgWidth = 18;
+                        node6.IconImgHeight = 18;
+                        node6.Tag = 'Table';
+                        node5.ChildNodes.push(node6);
+                        var node7 = new TreeviewNode();
+                        node7.ParentNode = node6;
+                        node7.ChildNodes = new Array();
+                        node7.Text = 'Columns';
+                        node7.IconImgURL = './Images/columns.png';
+                        node7.IconImgWidth = 18;
+                        node7.IconImgHeight = 18;
+                        node7.Tag = 'Columns';
+                        node6.ChildNodes.push(node7);
+                    }
+                    getImgURLFromNodes(tv1.CanvasID, tv1WindowID, tv1.Nodes);
+                    xCanvas.InvalidateRect(elemId, 0, 0, 1880, 900);
+                }
+
+                function fillColumns(data, node5) {
+                    node5.ChildNodes = new Array();
+                    for (var j = 0; j < data.length; j++) {
+                        var node6 = new TreeviewNode();
+                        node6.ParentNode = node5;
+                        node6.ChildNodes = new Array();
+                        if (data[j].IsPrimaryKey) {
+                            node6.Text = data[j].Name + ' (PK: ' +
+                                data[j].PrimaryKeyConstraintName + ')';
+                            node6.IconImgURL = './Images/primarykey.png';
+                        } else if (data[j].IsForeignKey) {
+                            node6.Text = data[j].Name + ' (FK: ' +
+                                data[j].ForeignKeyContraintName +
+                                ', FTable: ' + data[j].ForeignTableName +
+                                ', FColumn: ' + data[j].ForeignColumnName +
+                                ')';
+                            node6.IconImgURL = './Images/foreignkey.png';
+                        } else {
+                            node6.Text = data[j].Name;
+                            node6.IconImgURL = './Images/column.png';
+                        }
+                        node6.IconImgWidth = 18;
+                        node6.IconImgHeight = 18;
+                        node6.Tag = 'Column';
+                        node5.ChildNodes.push(node6);
+                    }
+                    getImgURLFromNodes(tv1.CanvasID, tv1WindowID, tv1.Nodes);
+                    xCanvas.InvalidateRect(elemId, 0, 0, 1880, 900);
+                }
+
+                function fillStoredProcedureOwners(data, node5) {
+                    node5.ChildNodes = new Array();
+                    for (var j = 0; j < data.length; j++) {
+                        var node6 = new TreeviewNode();
+                        node6.ParentNode = node5;
+                        node6.ChildNodes = new Array();
+                        node6.Text = data[j].Name + ' (Count: ' + data[j].Count + ')';
+                        node6.IconImgURL = './Images/user.png';
+                        node6.IconImgWidth = 18;
+                        node6.IconImgHeight = 18;
+                        node6.Tag = 'ProcedureOwner';
+                        node5.ChildNodes.push(node6);
+                    }
+                    getImgURLFromNodes(tv1.CanvasID, tv1WindowID, tv1.Nodes);
+                    xCanvas.InvalidateRect(elemId, 0, 0, 1880, 900);
+                }
+
+                function fillStoredProceduresForOwner(data, node5) {
+                    node5.ChildNodes = new Array();
+                    for (var j = 0; j < data.length; j++) {
+                        var node6 = new TreeviewNode();
+                        node6.ParentNode = node5;
+                        node6.ChildNodes = new Array();
+                        node6.Text = data[j].Name;
+                        node6.IconImgURL = './Images/storedprocedure.png';
+                        node6.IconImgWidth = 18;
+                        node6.IconImgHeight = 18;
+                        node6.Tag = 'Procedure';
+                        node5.ChildNodes.push(node6);
+                    }
+                    getImgURLFromNodes(tv1.CanvasID, tv1WindowID, tv1.Nodes);
+                    xCanvas.InvalidateRect(elemId, 0, 0, 1880, 900);
+                }
+
+                function fillViewOwners(data, node5) {
+                    node5.ChildNodes = new Array();
+                    for (var j = 0; j < data.length; j++) {
+                        var node6 = new TreeviewNode();
+                        node6.ParentNode = node5;
+                        node6.ChildNodes = new Array();
+                        node6.Text = data[j].Name + ' (Count: ' + data[j].Count + ')';
+                        node6.IconImgURL = './Images/user.png';
+                        node6.IconImgWidth = 18;
+                        node6.IconImgHeight = 18;
+                        node6.Tag = 'ViewOwner';
+                        node5.ChildNodes.push(node6);
+                    }
+                    getImgURLFromNodes(tv1.CanvasID, tv1WindowID, tv1.Nodes);
+                    xCanvas.InvalidateRect(elemId, 0, 0, 1880, 900);
+                }
+
+                function fillViewsForOwner(data, node5) {
+                    node5.ChildNodes = new Array();
+                    for (var j = 0; j < data.length; j++) {
+                        var node6 = new TreeviewNode();
+                        node6.ParentNode = node5;
+                        node6.ChildNodes = new Array();
+                        node6.Text = data[j].Name + ' (Row Count: ' + data[j].RowCount + ')';
+                        node6.IconImgURL = './Images/view.png';
+                        node6.IconImgWidth = 18;
+                        node6.IconImgHeight = 18;
+                        node6.Tag = 'View';
+                        node5.ChildNodes.push(node6);
+                    }
+                    getImgURLFromNodes(tv1.CanvasID, tv1WindowID, tv1.Nodes);
+                    xCanvas.InvalidateRect(elemId, 0, 0, 1880, 900);
+                }
+
+                function fillFunctionOwners(data, node5) {
+                    node5.ChildNodes = new Array();
+                    for (var j = 0; j < data.length; j++) {
+                        var node6 = new TreeviewNode();
+                        node6.ParentNode = node5;
+                        node6.ChildNodes = new Array();
+                        node6.Text = data[j].Name + ' (Count: ' + data[j].Count + ')';
+                        node6.IconImgURL = './Images/user.png';
+                        node6.IconImgWidth = 18;
+                        node6.IconImgHeight = 18;
+                        node6.Tag = 'FunctionOwner';
+                        node5.ChildNodes.push(node6);
+                    }
+                    getImgURLFromNodes(tv1.CanvasID, tv1WindowID, tv1.Nodes);
+                    xCanvas.InvalidateRect(elemId, 0, 0, 1880, 900);
+                }
+
+                function fillFunctionsForOwner(data, node5) {
+                    node5.ChildNodes = new Array();
+                    for (var j = 0; j < data.length; j++) {
+                        var node6 = new TreeviewNode();
+                        node6.ParentNode = node5;
+                        node6.ChildNodes = new Array();
+                        node6.Text = data[j].Name;
+                        node6.IconImgURL = './Images/function.png';
+                        node6.IconImgWidth = 18;
+                        node6.IconImgHeight = 18;
+                        node6.Tag = 'Function';
+                        node5.ChildNodes.push(node6);
+                    }
+                    getImgURLFromNodes(tv1.CanvasID, tv1WindowID, tv1.Nodes);
+                    xCanvas.InvalidateRect(elemId, 0, 0, 1880, 900);
+                }
+
+                function oraFillServer(data) {
+                    var node0 = new TreeviewNode();
+                    node0.Text = data.Name + ' (Oracle)';
+                    node0.ChildNodes = new Array();
+                    node0.IconImgURL = './Images/server.png';
+                    node0.IconImgWidth = 18;
+                    node0.IconImgHeight = 18;
+                    node0.Tag = 'OraServer';
+                    tv1.Nodes.push(node0);
+                    var node1 = new TreeviewNode();
+                    node1.ParentNode = node0;
+                    node1.Text = 'Tables (Count: ' + data.TableCount + ')';
+                    node1.ChildNodes = new Array();
+                    node1.IconImgURL = './Images/tables.png';
+                    node1.IconImgWidth = 18;
+                    node1.IconImgHeight = 18;
+                    node1.Tag = 'OraTables';
+                    node0.ChildNodes.push(node1);
+                    var node2 = new TreeviewNode();
+                    node2.ParentNode = node0;
+                    node2.Text = 'Views (Count: ' + data.ViewCount + ')';
+                    node2.ChildNodes = new Array();
+                    node2.IconImgURL = './Images/views.png';
+                    node2.IconImgWidth = 18;
+                    node2.IconImgHeight = 18;
+                    node2.Tag = 'OraViews';
+                    node0.ChildNodes.push(node2);
+                    var node3 = new TreeviewNode();
+                    node3.ParentNode = node0;
+                    node3.Text = 'Stored Procedures (Count: ' + data.ProcedureCount + ')';
+                    node3.ChildNodes = new Array();
+                    node3.IconImgURL = './Images/storedprocedures.png';
+                    node3.IconImgWidth = 18;
+                    node3.IconImgHeight = 18;
+                    node3.Tag = 'OraProcedures';
+                    node0.ChildNodes.push(node3);
+                    var node4 = new TreeviewNode();
+                    node4.ParentNode = node0;
+                    node4.Text = 'Functions (Count: ' + data.FunctionCount + ')';
+                    node4.ChildNodes = new Array();
+                    node4.IconImgURL = './Images/functions.png';
+                    node4.IconImgWidth = 18;
+                    node4.IconImgHeight = 18;
+                    node4.Tag = 'OraFunctions';
+                    node0.ChildNodes.push(node4);
+                    getImgURLFromNodes(tv1.CanvasID, tv1WindowID, tv1.Nodes);
+                    xCanvas.InvalidateRect(elemId, 0, 0, 1880, 900);
+                }
+
+                function oraFillTableOwners(data, node) {
+                    node.ChildNodes = new Array();
+                    for (var j = 0; j < data.length; j++) {
+                        var node1 = new TreeviewNode();
+                        node1.ParentNode = node;
+                        node1.ChildNodes = new Array();
+                        node1.Text = data[j].Name + ' (Count: ' + data[j].Count + ')';
+                        node1.IconImgURL = './Images/user.png';
+                        node1.IconImgWidth = 18;
+                        node1.IconImgHeight = 18;
+                        node1.Tag = 'OraTableOwner';
+                        node.ChildNodes.push(node1);
+                    }
+                    getImgURLFromNodes(tv1.CanvasID, tv1WindowID, tv1.Nodes);
+                    xCanvas.InvalidateRect(elemId, 0, 0, 1880, 900);
+                }
+
+                function oraFillTablesForOwner(data, node) {
+                    node.ChildNodes = new Array();
+                    for (var j = 0; j < data.length; j++) {
+                        var node1 = new TreeviewNode();
+                        node1.ParentNode = node;
+                        node1.ChildNodes = new Array();
+                        node1.Text = data[j].Name;
+                        node1.IconImgURL = './Images/table.png';
+                        node1.IconImgWidth = 18;
+                        node1.IconImgHeight = 18;
+                        node1.Tag = 'OraTable';
+                        node.ChildNodes.push(node1);
+                        var node2 = new TreeviewNode();
+                        node2.ParentNode = node1;
+                        node2.ChildNodes = new Array();
+                        node2.Text = 'Columns';
+                        node2.IconImgURL = './Images/columns.png';
+                        node2.IconImgWidth = 18;
+                        node2.IconImgHeight = 18;
+                        node2.Tag = 'OraColumns';
+                        node1.ChildNodes.push(node2);
+                    }
+                    getImgURLFromNodes(tv1.CanvasID, tv1WindowID, tv1.Nodes);
+                    xCanvas.InvalidateRect(elemId, 0, 0, 1880, 900);
+                }
+
+                function oraFillColumns(data, node5) {
+                    node5.ChildNodes = new Array();
+                    for (var j = 0; j < data.length; j++) {
+                        var node6 = new TreeviewNode();
+                        node6.ParentNode = node5;
+                        node6.ChildNodes = new Array();
+                        if (data[j].IsPrimaryKey) {
+                            node6.Text = data[j].Name + ' (PK: ' +
+                                data[j].PrimaryKeyConstraintName + ')';
+                            node6.IconImgURL = './Images/primarykey.png';
+                        } else if (data[j].IsForeignKey) {
+                            node6.Text = data[j].Name + ' (FK: ' +
+                                data[j].ForeignKeyContraintName +
+                                ', FTable: ' + data[j].ForeignTableName +
+                                ', FColumn: ' + data[j].ForeignColumnName +
+                                ')';
+                            node6.IconImgURL = './Images/foreignkey.png';
+                        } else {
+                            node6.Text = data[j].Name;
+                            node6.IconImgURL = './Images/column.png';
+                        }
+                        node6.IconImgWidth = 18;
+                        node6.IconImgHeight = 18;
+                        node6.Tag = 'OraColumn';
+                        node5.ChildNodes.push(node6);
+                    }
+                    getImgURLFromNodes(tv1.CanvasID, tv1WindowID, tv1.Nodes);
+                    xCanvas.InvalidateRect(elemId, 0, 0, 1880, 900);
+                }
+
+                function oraFillViewOwners(data, node) {
+                    node.ChildNodes = new Array();
+                    for (var j = 0; j < data.length; j++) {
+                        var node1 = new TreeviewNode();
+                        node1.ParentNode = node;
+                        node1.ChildNodes = new Array();
+                        node1.Text = data[j].Name + ' (Count: ' + data[j].Count + ')';
+                        node1.IconImgURL = './Images/user.png';
+                        node1.IconImgWidth = 18;
+                        node1.IconImgHeight = 18;
+                        node1.Tag = 'OraViewOwner';
+                        node.ChildNodes.push(node1);
+                    }
+                    getImgURLFromNodes(tv1.CanvasID, tv1WindowID, tv1.Nodes);
+                    xCanvas.InvalidateRect(elemId, 0, 0, 1880, 900);
+                }
+
+                function oraFillViewsForOwner(data, node) {
+                    node.ChildNodes = new Array();
+                    for (var j = 0; j < data.length; j++) {
+                        var node1 = new TreeviewNode();
+                        node1.ParentNode = node;
+                        node1.ChildNodes = new Array();
+                        node1.Text = data[j].Name;
+                        node1.IconImgURL = './Images/view.png';
+                        node1.IconImgWidth = 18;
+                        node1.IconImgHeight = 18;
+                        node1.Tag = 'OraView';
+                        node.ChildNodes.push(node1);
+                    }
+                    getImgURLFromNodes(tv1.CanvasID, tv1WindowID, tv1.Nodes);
+                    xCanvas.InvalidateRect(elemId, 0, 0, 1880, 900);
+                }
+
+                function oraFillProceduresOwners(data, node) {
+                    node.ChildNodes = new Array();
+                    for (var j = 0; j < data.length; j++) {
+                        var node1 = new TreeviewNode();
+                        node1.ParentNode = node;
+                        node1.ChildNodes = new Array();
+                        node1.Text = data[j].Name + ' (Count: ' + data[j].Count + ')';
+                        node1.IconImgURL = './Images/user.png';
+                        node1.IconImgWidth = 18;
+                        node1.IconImgHeight = 18;
+                        node1.Tag = 'OraProcedureOwner';
+                        node.ChildNodes.push(node1);
+                    }
+                    getImgURLFromNodes(tv1.CanvasID, tv1WindowID, tv1.Nodes);
+                    xCanvas.InvalidateRect(elemId, 0, 0, 1880, 900);
+                }
+
+                function oraFillProceduresForOwner(data, node) {
+                    node.ChildNodes = new Array();
+                    for (var j = 0; j < data.length; j++) {
+                        var node1 = new TreeviewNode();
+                        node1.ParentNode = node;
+                        node1.ChildNodes = new Array();
+                        node1.Text = data[j].Name;
+                        node1.IconImgURL = './Images/storedprocedure.png';
+                        node1.IconImgWidth = 18;
+                        node1.IconImgHeight = 18;
+                        node1.Tag = 'OraProcedure';
+                        node.ChildNodes.push(node1);
+                    }
+                    getImgURLFromNodes(tv1.CanvasID, tv1WindowID, tv1.Nodes);
+                    xCanvas.InvalidateRect(elemId, 0, 0, 1880, 900);
+                }
+
+                function oraFillFunctionOwners(data, node) {
+                    node.ChildNodes = new Array();
+                    for (var j = 0; j < data.length; j++) {
+                        var node1 = new TreeviewNode();
+                        node1.ParentNode = node;
+                        node1.ChildNodes = new Array();
+                        node1.Text = data[j].Name + ' (Count: ' + data[j].Count + ')';
+                        node1.IconImgURL = './Images/user.png';
+                        node1.IconImgWidth = 18;
+                        node1.IconImgHeight = 18;
+                        node1.Tag = 'OraFunctionOwner';
+                        node.ChildNodes.push(node1);
+                    }
+                    getImgURLFromNodes(tv1.CanvasID, tv1WindowID, tv1.Nodes);
+                    xCanvas.InvalidateRect(elemId, 0, 0, 1880, 900);
+                }
+
+                function oraFillFunctionsForOwner(data, node) {
+                    node.ChildNodes = new Array();
+                    for (var j = 0; j < data.length; j++) {
+                        var node1 = new TreeviewNode();
+                        node1.ParentNode = node;
+                        node1.ChildNodes = new Array();
+                        node1.Text = data[j].Name;
+                        node1.IconImgURL = './Images/function.png';
+                        node1.IconImgWidth = 18;
+                        node1.IconImgHeight = 18;
+                        node1.Tag = 'OraFunction';
+                        node.ChildNodes.push(node1);
+                    }
+                    getImgURLFromNodes(tv1.CanvasID, tv1WindowID, tv1.Nodes);
+                    xCanvas.InvalidateRect(elemId, 0, 0, 1880, 900);
+                }
+
+                function mysqlFillServer(data) {
+                    var node0 = new TreeviewNode();
+                    node0.Text = data.Name + ' (MySQL Server)';
+                    node0.ChildNodes = new Array();
+                    node0.IconImgURL = './Images/server.png';
+                    node0.IconImgWidth = 18;
+                    node0.IconImgHeight = 18;
+                    node0.Tag = 'MySQLServer';
+                    tv1.Nodes.push(node0);
+                    var node1 = new TreeviewNode();
+                    node1.ParentNode = node0;
+                    node1.Text = 'Schemas';
+                    node1.ChildNodes = new Array();
+                    node1.IconImgURL = './Images/tables.png';
+                    node1.IconImgWidth = 18;
+                    node1.IconImgHeight = 18;
+                    node1.Tag = 'MySQLSchemas';
+                    node0.ChildNodes.push(node1);
+                    getImgURLFromNodes(tv1.CanvasID, tv1WindowID, tv1.Nodes);
+                    xCanvas.InvalidateRect(elemId, 0, 0, 1880, 900);
+                }
+
+                function mysqlFillSchemas(data, node2) {
+                    node2.ChildNodes = new Array();
+                    for (var i = 0; i < data.length; i++) {
+                        var node3 = new TreeviewNode();
+                        node3.ParentNode = node2;
+                        node3.Text = data[i].Name;
+                        node3.ChildNodes = new Array();
+                        node3.IconImgURL = './Images/database.png';
+                        node3.IconImgWidth = 18;
+                        node3.IconImgHeight = 18;
+                        node3.Tag = 'MySQLSchema';
+                        node2.ChildNodes.push(node3);
+                        var node4 = new TreeviewNode();
+                        node4.ParentNode = node3;
+                        node4.Text = 'Tables (Count: ' + data[i].TableCount + ')';
+                        node4.ChildNodes = new Array();
+                        node4.IconImgURL = './Images/tables.png';
+                        node4.IconImgWidth = 18;
+                        node4.IconImgHeight = 18;
+                        node4.Tag = 'MySQLTables';
+                        node3.ChildNodes.push(node4);
+                        var node6 = new TreeviewNode();
+                        node6.ParentNode = node3;
+                        node6.Text = 'Views (Count: ' + data[i].ViewCount + ')';
+                        node6.ChildNodes = new Array();
+                        node6.IconImgURL = './Images/views.png';
+                        node6.IconImgWidth = 18;
+                        node6.IconImgHeight = 18;
+                        node6.Tag = 'MySQLViews';
+                        node3.ChildNodes.push(node6);
+                        var node5 = new TreeviewNode();
+                        node5.ParentNode = node3;
+                        node5.Text = 'Stored Procedures (Count: ' +
+                            data[i].ProcedureCount + ')';
+                        node5.ChildNodes = new Array();
+                        node5.IconImgURL = './Images/storedprocedures.png';
+                        node5.IconImgWidth = 18;
+                        node5.IconImgHeight = 18;
+                        node5.Tag = 'MySQLProcedures';
+                        node3.ChildNodes.push(node5);
+                        var node7 = new TreeviewNode();
+                        node7.ParentNode = node3;
+                        node7.Text = 'Functions (Count: ' + data[i].FunctionCount + ')';
+                        node7.ChildNodes = new Array();
+                        node7.IconImgURL = './Images/functions.png';
+                        node7.IconImgWidth = 18;
+                        node7.IconImgHeight = 18;
+                        node7.Tag = 'MySQLFunctions';
+                        node3.ChildNodes.push(node7);
+                    }
+                    getImgURLFromNodes(tv1.CanvasID, tv1WindowID, tv1.Nodes);
+                    xCanvas.InvalidateRect(elemId, 0, 0, 1880, 900);
+                }
+
+                function mysqlFillTables(data, node) {
+                    node.ChildNodes = new Array();
+                    for (var j = 0; j < data.length; j++) {
+                        var node1 = new TreeviewNode();
+                        node1.ParentNode = node;
+                        node1.ChildNodes = new Array();
+                        node1.Text = data[j].Name + ' (Row Count: ' + data[j].RowCount + ')';
+                        node1.IconImgURL = './Images/table.png';
+                        node1.IconImgWidth = 18;
+                        node1.IconImgHeight = 18;
+                        node1.Tag = 'MySQLTable';
+                        node.ChildNodes.push(node1);
+                        var node2 = new TreeviewNode();
+                        node2.ParentNode = node1;
+                        node2.ChildNodes = new Array();
+                        node2.Text = 'Columns';
+                        node2.IconImgURL = './Images/columns.png';
+                        node2.IconImgWidth = 18;
+                        node2.IconImgHeight = 18;
+                        node2.Tag = 'MySQLColumns';
+                        node1.ChildNodes.push(node2);
+                    }
+                    getImgURLFromNodes(tv1.CanvasID, tv1WindowID, tv1.Nodes);
+                    xCanvas.InvalidateRect(elemId, 0, 0, 1880, 900);
+                }
+
+                function mysqlFillColumns(data, node5) {
+                    node5.ChildNodes = new Array();
+                    for (var j = 0; j < data.length; j++) {
+                        var node6 = new TreeviewNode();
+                        node6.ParentNode = node5;
+                        node6.ChildNodes = new Array();
+                        if (data[j].IsPrimaryKey) {
+                            node6.Text = data[j].Name + ' (PK: ' +
+                                data[j].PrimaryKeyConstraintName + ')';
+                            node6.IconImgURL = './Images/primarykey.png';
+                        } else if (data[j].IsForeignKey) {
+                            node6.Text = data[j].Name + ' (FK: ' +
+                                data[j].ForeignKeyContraintName +
+                                ', FTable: ' + data[j].ForeignTableName +
+                                ', FColumn: ' + data[j].ForeignColumnName +
+                                ')';
+                            node6.IconImgURL = './Images/foreignkey.png';
+                        } else {
+                            node6.Text = data[j].Name;
+                            node6.IconImgURL = './Images/column.png';
+                        }
+                        node6.IconImgWidth = 18;
+                        node6.IconImgHeight = 18;
+                        node6.Tag = 'MySQLColumn';
+                        node5.ChildNodes.push(node6);
+                    }
+                    getImgURLFromNodes(tv1.CanvasID, tv1WindowID, tv1.Nodes);
+                    xCanvas.InvalidateRect(elemId, 0, 0, 1880, 900);
+                }
+
+                function mysqlFillViews(data, node) {
+                    node.ChildNodes = new Array();
+                    for (var j = 0; j < data.length; j++) {
+                        var node1 = new TreeviewNode();
+                        node1.ParentNode = node;
+                        node1.ChildNodes = new Array();
+                        node1.Text = data[j].Name + ' (Row Count: ' + data[j].RowCount + ')';
+                        node1.IconImgURL = './Images/view.png';
+                        node1.IconImgWidth = 18;
+                        node1.IconImgHeight = 18;
+                        node1.Tag = 'MySQLView';
+                        node.ChildNodes.push(node1);
+                    }
+                    getImgURLFromNodes(tv1.CanvasID, tv1WindowID, tv1.Nodes);
+                    xCanvas.InvalidateRect(elemId, 0, 0, 1880, 900);
+                }
+
+                function mysqlFillProcedures(data, node) {
+                    node.ChildNodes = new Array();
+                    for (var j = 0; j < data.length; j++) {
+                        var node1 = new TreeviewNode();
+                        node1.ParentNode = node;
+                        node1.ChildNodes = new Array();
+                        node1.Text = data[j].Name;
+                        node1.IconImgURL = './Images/storedprocedure.png';
+                        node1.IconImgWidth = 18;
+                        node1.IconImgHeight = 18;
+                        node1.Tag = 'MySQLProcedure';
+                        node.ChildNodes.push(node1);
+                    }
+                    getImgURLFromNodes(tv1.CanvasID, tv1WindowID, tv1.Nodes);
+                    xCanvas.InvalidateRect(elemId, 0, 0, 1880, 900);
+                }
+
+                function mysqlFillFunctions(data, node) {
+                    node.ChildNodes = new Array();
+                    for (var j = 0; j < data.length; j++) {
+                        var node1 = new TreeviewNode();
+                        node1.ParentNode = node;
+                        node1.ChildNodes = new Array();
+                        node1.Text = data[j].Name;
+                        node1.IconImgURL = './Images/function.png';
+                        node1.IconImgWidth = 18;
+                        node1.IconImgHeight = 18;
+                        node1.Tag = 'MySQLFunction';
+                        node.ChildNodes.push(node1);
+                    }
+                    getImgURLFromNodes(tv1.CanvasID, tv1WindowID, tv1.Nodes);
+                    xCanvas.InvalidateRect(elemId, 0, 0, 1880, 900);
+                }
+
+                var elemId = 'canvas';
+                var xCanvas = registerCanvas(elemId);
+                var tv1 = new Treeview();
+                tv1.CanvasID = elemId;
+                tv1.ControlNameID = 'tv1';
+                tv1.X = 0;
+                tv1.Y = 0;
+                tv1.Width = 500;
+                tv1.Height = 860;
+                tv1.Nodes = new Array();
+                tv1.TextColor = '#202020';
+                tv1.TextFontString = '12pt Tahoma';
+                tv1.TextHeight = 12;
+                tv1.SelectedNodeTextColor = '#2020A0';
+                tv1.SelectedNodeTextFontString = '12pt Tahoma';
+                tv1.SelectedNodeTextHeight = 12;
+                tv1.ExpandedNodeImgURL = './Images/expandedIcon.png';
+                tv1.ExpandedNodeImgURLWidth = 18;
+                tv1.ExpandedNodeImgURLHeight = 18;
+                tv1.CollapsedNodeImgURL = './Images/collapsedIcon.png';
+                tv1.CollapsedNodeImgURLWidth = 18;
+                tv1.CollapsedNodeImgURLHeight = 18;
+                tv1.ClickNodeFunction = function (control, e, node, type) {
+                    if (type === 3) {
+                        if (node.Tag === 'Databases') {
+                            invokeServerSide('Default.aspx?Function=GetDatabases&' +
+                                'Parameter=' + mssqlConnString, fillDatabases, node);
+                            xCanvas.InvalidateRect(elemId, 0, 0, 1880, 900);
+                        } else if (node.Tag === 'Tables') {
+                            invokeServerSide('Default.aspx?Function=GetTableOwners&' +
+                                'Parameter=' + mssqlConnString + '&Parameter1=' +
+                                node.ParentNode.Text, fillTableOwners, node);
+                            xCanvas.InvalidateRect(elemId, 0, 0, 1880, 900);
+                        } else if (node.Tag === 'TableOwner') {
+                            invokeServerSide('Default.aspx?Function=GetTablesByOwner&' +
+                                'Parameter=' + mssqlConnString + '&Parameter1=' +
+                                node.ParentNode.ParentNode.Text + '&Parameter2=' +
+                                node.Text.split(" ")[0], fillTablesForOwner, node);
+                            xCanvas.InvalidateRect(elemId, 0, 0, 1880, 900);
+                        } else if (node.Tag === 'Columns') {
+                            invokeServerSide('Default.aspx?Function=GetColumns&' +
+                                'Parameter=' + mssqlConnString + '&Parameter1=' +
+                                node.ParentNode.ParentNode.ParentNode.ParentNode.Text +
+                                '&Parameter2=' + node.ParentNode.Text.split(' ')[0],
+                                fillColumns, node);
+                            xCanvas.InvalidateRect(elemId, 0, 0, 1880, 900);
+                        } else if (node.Tag === 'Views') {
+                            invokeServerSide('Default.aspx?Function=GetViewOwners&' +
+                                'Parameter=' + mssqlConnString + '&Parameter1=' +
+                                node.ParentNode.Text, fillViewOwners, node);
+                            xCanvas.InvalidateRect(elemId, 0, 0, 1880, 900);
+                        } else if (node.Tag === 'ViewOwner') {
+                            invokeServerSide('Default.aspx?Function=GetViewsByOwner&' +
+                                'Parameter=' + mssqlConnString + '&Parameter1=' +
+                                node.ParentNode.ParentNode.Text + '&Parameter2=' +
+                                node.Text.split(' ')[0], fillViewsForOwner, node);
+                            xCanvas.InvalidateRect(elemId, 0, 0, 1880, 900);
+                        } else if (node.Tag === 'Procedures') {
+                            invokeServerSide('Default.aspx?Function=' +
+                                'GetStoredProcedureOwners&Parameter=' +
+                                mssqlConnString + '&Parameter1=' +
+                                node.ParentNode.Text, fillStoredProcedureOwners,
+                                node);
+                            xCanvas.InvalidateRect(elemId, 0, 0, 1880, 900);
+                        } else if (node.Tag === 'ProcedureOwner') {
+                            invokeServerSide('Default.aspx?Function=' +
+                                'GetStoredProceduresByOwner&Parameter=' +
+                                mssqlConnString + '&Parameter1=' +
+                                node.ParentNode.ParentNode.Text + '&Parameter2=' +
+                                node.Text.split(' ')[0], fillStoredProcedureOwners,
+                                node);
+                            xCanvas.InvalidateRect(elemId, 0, 0, 1880, 900);
+                        } else if (node.Tag === 'Functions') {
+                            invokeServerSide('Default.aspx?Function=GetFunctionOwners&' +
+                                'Parameter=' + mssqlConnString + '&Parameter1=' +
+                                node.ParentNode.Text, fillFunctionOwners, node);
+                            xCanvas.InvalidateRect(elemId, 0, 0, 1880, 900);
+                        } else if (node.Tag === 'FunctionOwner') {
+                            invokeServerSide('Default.aspx?Function=GetFunctionsByOwner&' +
+                                'Parameter=' + mssqlConnString + '&Parameter1=' +
+                                node.ParentNode.ParentNode.Text + '&Parameter2=' +
+                                node.Text.split(' ')[0], fillFunctionsForOwner, node);
+                            xCanvas.InvalidateRect(elemId, 0, 0, 1880, 900);
+                        } else if (node.Tag === 'OraTables') {
+                            invokeServerSide('Default.aspx?Function=OraGetTableOwners&' +
+                                'Parameter=' + oraConnString, oraFillTableOwners, node);
+                            xCanvas.InvalidateRect(elemId, 0, 0, 1880, 900);
+                        } else if (node.Tag === 'OraTableOwner') {
+                            invokeServerSide('Default.aspx?Function=OraGetTablesByOwner&' +
+                                'Parameter=' + oraConnString + "&Parameter1=" +
+                                node.Text.split(' ')[0], oraFillTablesForOwner, node);
+                            xCanvas.InvalidateRect(elemId, 0, 0, 1880, 900);
+                        } else if (node.Tag === 'OraColumns') {
+                            invokeServerSide('Default.aspx?Function=OraGetColumns&' +
+                                'Parameter=' + oraConnString + '&Parameter1=' +
+                                node.ParentNode.Text, oraFillColumns, node);
+                            xCanvas.InvalidateRect(elemId, 0, 0, 1880, 900);
+                        } else if (node.Tag === 'OraViews') {
+                            invokeServerSide('Default.aspx?Function=OraGetViewOwners&' +
+                                'Parameter=' + oraConnString, oraFillViewOwners, node);
+                            xCanvas.InvalidateRect(elemId, 0, 0, 1880, 900);
+                        } else if (node.Tag === 'OraViewOwner') {
+                            invokeServerSide('Default.aspx?Function=OraGetViewsByOwner&' +
+                                'Parameter=' + oraConnString + '&Parameter1=' +
+                                node.Text.split(' ')[0], oraFillViewsForOwner, node);
+                            xCanvas.InvalidateRect(elemId, 0, 0, 1880, 900);
+                        } else if (node.Tag === 'OraProcedures') {
+                            invokeServerSide('Default.aspx?Function=' +
+                                'OraGetProcedureOwners&Parameter=' +
+                                oraConnString, oraFillProceduresOwners, node);
+                            xCanvas.InvalidateRect(elemId, 0, 0, 1880, 900);
+                        } else if (node.Tag === 'OraProcedureOwner') {
+                            invokeServerSide('Default.aspx?Function=' +
+                                'OraGetProceduresByOwner&Parameter=' +
+                                oraConnString + '&Parameter1=' +
+                                node.Text.split(' ')[0], oraFillProceduresForOwner,
+                                node);
+                            xCanvas.InvalidateRect(elemId, 0, 0, 1880, 900);
+                        } else if (node.Tag === 'OraFunctions') {
+                            invokeServerSide('Default.aspx?Function=OraGetFunctionOwners&' +
+                                'Parameter=' + oraConnString, oraFillFunctionOwners, node);
+                            xCanvas.InvalidateRect(elemId, 0, 0, 1880, 900);
+                        } else if (node.Tag === 'OraFunctionOwner') {
+                            invokeServerSide('Default.aspx?Function=OraGetFunctionsByOwner&' +
+                                'Parameter=' + oraConnString + '&Parameter1=' +
+                                node.Text.split(' ')[0], oraFillFunctionsForOwner, node);
+                            xCanvas.InvalidateRect(elemId, 0, 0, 1880, 900);
+                        } else if (node.Tag === 'MySQLSchemas') {
+                            invokeServerSide('Default.aspx?Function=MySQLGetSchemas&' +
+                                'Parameter=' + mysqlConnString, mysqlFillSchemas, node);
+                            xCanvas.InvalidateRect(elemId, 0, 0, 1880, 900);
+                        } else if (node.Tag === 'MySQLTables') {
+                            invokeServerSide('Default.aspx?Function=MySQLGetTables&' +
+                                'Parameter=' + mysqlConnString + '&Parameter1=' +
+                                node.ParentNode.Text, mysqlFillTables,
+                                node);
+                            xCanvas.InvalidateRect(elemId, 0, 0, 1880, 900);
+                        } else if (node.Tag === 'MySQLColumns') {
+                            invokeServerSide('Default.aspx?Function=MySQLGetColumns&' +
+                                'Parameter=' + mysqlConnString + '&Parameter1=' +
+                                node.ParentNode.ParentNode.ParentNode.Text +
+                                '&Parameter2=' + node.ParentNode.Text.split(' ')[0],
+                                mysqlFillColumns, node);
+                            xCanvas.InvalidateRect(elemId, 0, 0, 1880, 900);
+                        } else if (node.Tag === 'MySQLViews') {
+                            invokeServerSide('Default.aspx?Function=MySQLGetViews&' +
+                                'Parameter=' + mysqlConnString + '&Parameter1=' +
+                                node.ParentNode.Text,
+                                mysqlFillViews, node);
+                            xCanvas.InvalidateRect(elemId, 0, 0, 1880, 900);
+                        } else if (node.Tag === 'MySQLProcedures') {
+                            invokeServerSide('Default.aspx?Function=MySQLGetProcedures&' +
+                                'Parameter=' + mysqlConnString + '&Parameter1=' +
+                                node.ParentNode.Text,
+                                mysqlFillProcedures, node);
+                            xCanvas.InvalidateRect(elemId, 0, 0, 1880, 900);
+                        } else if (node.Tag === 'MySQLFunctions') {
+                            invokeServerSide('Default.aspx?Function=MySQLGetFunctions&' +
+                                'Parameter=' + mysqlConnString + '&Parameter1=' +
+                                node.ParentNode.Text,
+                                mysqlFillFunctions, node);
+                            xCanvas.InvalidateRect(elemId, 0, 0, 1880, 900);
+                        }
+                    }
+                };
+                var tv1WindowID = tv1.Initialize();
+                var grid1 = new Grid();
+                grid1.CanvasID = elemId;
+                grid1.ControlNameID = 'grid1';
+                grid1.X = 510;
+                grid1.Y = 0;
+                grid1.Width = 1340;
+                grid1.Height = 860;
+                grid1.Rows = new Array();
+                grid1.Columns = new Array();
+                grid1.TextColor = '#000000';
+                grid1.TextFontString = '12pt Tahoma';
+                grid1.TextHeight = 12;
+                grid1.CellHeight = 20;
+                grid1.CellBackgroundColor = '#FFFFFF';
+                grid1.HasHeader = true;
+                grid1.HeaderTextColor = '#FFFFFF';
+                grid1.HeaderTextFontString = '14pt Tahoma';
+                grid1.HeaderTextHeight = 14;
+                grid1.HeaderBackgroundColor = '#3d378c';
+                grid1.BorderColor = '#e5e5e5';
+                grid1.BorderLineWidth = 1;
+                grid1.SelectedCellBackgroundColor = '#a5cff1';
+                grid1.SelectedCellTextColor = '#FFFFFF';
+                grid1.SelectedCellTextFontString = '12pt Tahoma';
+                grid1.SelectedCellTextHeight = 12;
+                grid1.NullCellBackgroundColor = '#ffffe1';
+                grid1.HeaderClickFunction = function (control, e, o) {
+                    alert('Clicked header index: ' + o.ColumnIndex);
+                };
+                grid1.CellClickFunction = function (control, e, o) {
+                    alert('Clicked cell at row index: ' + o.RowIndex +
+                        ' and column index: ' + o.ColumnIndex);
+                };
+                grid1.TabStopIndex = 1;
+                grid1.Tag = null;
+                var grid1Control = grid1.Initialize();
+                var mssqlConnString = encodeURI('Data Source=localhost;Database=master;' +
+                    'Trusted_Connection=yes');
+                /* var oraConnString = encodeURI('Data Source=localhost:1521/XE;User ' +
+                    'Id=system;password = XfIrE232');
+                var mysqlConnString = encodeURI('server=127.0.0.1;uid=root;' +
+                    'pwd=XfIrE232;database = world'); */
+                invokeServerSide('Default.aspx?Function=GetServer&' +
+                    'Parameter=' + mssqlConnString, fillServer);
+                /* invokeServerSide('Default.aspx?Function=OraGetServer&' +
+                    'Parameter=' + oraConnString, oraFillServer);
+                invokeServerSide('Default.aspx?Function=MySQLGetServer&' +
+                    'Parameter=' + mysqlConnString, mysqlFillServer); */
+                xCanvas.InvalidateRect(elemId, 0, 0, 1880, 900);
+            </script>
+        </div>
+</body>
+</html>
